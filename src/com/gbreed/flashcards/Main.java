@@ -1,4 +1,4 @@
-package sample;
+package com.gbreed.flashcards;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -74,7 +74,7 @@ public class Main extends Application {
         topBox.getChildren().add(questionField);
         bottomBox.getChildren().addAll(showDef, nextCard);
 
-        // Center The Labels
+        // Center the labels
         topBox.setAlignment(Pos.CENTER);
         midBox.setAlignment(Pos.CENTER);
         bottomBox.setAlignment(Pos.BOTTOM_RIGHT);

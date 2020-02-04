@@ -1,4 +1,4 @@
-package sample;
+package com.gbreed.flashcards;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package sample;
+package com.gbreed.flashcards;
 
 import java.io.File;
 import java.io.FileNotFoundException;

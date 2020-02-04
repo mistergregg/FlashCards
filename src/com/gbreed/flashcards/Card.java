@@ -1,4 +1,4 @@
-package sample;
+package com.gbreed.flashcards;
 
 public class Card {
     private final String definition;
