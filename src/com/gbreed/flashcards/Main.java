@@ -20,10 +20,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        dataHandler = new DataHandler();
 
         double width = Screen.getPrimary().getVisualBounds().getWidth();
         double height = Screen.getPrimary().getVisualBounds().getHeight();
+
+        dataHandler = new DataHandler((int) width);
 
         // Create the new Border Pane
         BorderPane borderPane = new BorderPane();
@@ -42,23 +43,56 @@ public class Main extends Application {
         TextArea definitionField = new TextArea ("Definition");
         definitionField.setFont(new Font("Arial", 30));
         definitionField.setWrapText(true);
+        definitionField.setEditable(false);
         midBox.setPadding(new Insets(0, 10, 20, 10));
 
         // Setup Bottom Border
         Button showDef = new Button("Show Definition");
         showDef.setPrefSize(100, 20);
-        Button nextCard = new Button("Next Card");
-        nextCard.setPrefSize(100, 20);
+        Button good = new Button("Good!");
+        good.setPrefSize(100, 20);
+        Button ok = new Button("OK");
+        ok.setPrefSize(100, 20);
+        Button bad = new Button("Bad");
+        bad.setPrefSize(100, 20);
+
         bottomBox.setPadding(new Insets(0, 20, 20, 0));
         bottomBox.setSpacing(20);
 
         // Handle the button Clicks
-        nextCard.setOnAction(new EventHandler<ActionEvent>() {
+        good.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                currentCard = dataHandler.getRandomCard();
+                currentCard = dataHandler.good();
                 questionField.setText(currentCard.getQuestion());
                 definitionField.setText("");
+                good.setDisable(true);
+                bad.setDisable(true);
+                ok.setDisable(true);
+            }
+        });
+
+        bad.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                currentCard = dataHandler.bad();
+                questionField.setText(currentCard.getQuestion());
+                definitionField.setText("");
+                good.setDisable(true);
+                bad.setDisable(true);
+                ok.setDisable(true);
+            }
+        });
+
+        ok.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                currentCard = dataHandler.ok();
+                questionField.setText(currentCard.getQuestion());
+                definitionField.setText("");
+                good.setDisable(true);
+                bad.setDisable(true);
+                ok.setDisable(true);
             }
         });
 
@@ -66,13 +100,16 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 definitionField.setText(currentCard.getDefinition());
+                good.setDisable(false);
+                bad.setDisable(false);
+                ok.setDisable(false);
             }
         });
 
         // Add children to border sections
         midBox.getChildren().add(definitionField);
         topBox.getChildren().add(questionField);
-        bottomBox.getChildren().addAll(showDef, nextCard);
+        bottomBox.getChildren().addAll(showDef, good, bad, ok);
 
         // Center the labels
         topBox.setAlignment(Pos.CENTER);
@@ -88,6 +125,13 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(borderPane, width / 2, height / 2));
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        currentCard = dataHandler.getRandomLowestCard();
+        questionField.setText(currentCard.getQuestion());
+        definitionField.setText("");
+        good.setDisable(true);
+        bad.setDisable(true);
+        ok.setDisable(true);
     }
 
 

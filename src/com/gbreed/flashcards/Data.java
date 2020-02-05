@@ -9,22 +9,24 @@ import java.util.Scanner;
 public class Data {
     static private List<Card> terms;
 
-    Data(String fileName) {
+    Data(String fileName, int screenWidth) {
         terms = new ArrayList<>();
 
-        loadData(fileName);
+        loadData(fileName, screenWidth);
     }
 
-    static private void loadData(String fileName)
+    static private void loadData(String fileName, int screenWidth)
     {
+        int maxWordLength = screenWidth / 50;
+
         try {
             File file = new File(fileName);
             Scanner sc = new Scanner(file);
 
             boolean startCard = true;
 
-            StringBuilder question = new StringBuilder();
-            String definition = "";
+            StringBuilder definition = new StringBuilder();
+            String question= "";
             while (sc.hasNextLine())
             {
                 String next = sc.nextLine();
@@ -33,21 +35,43 @@ public class Data {
                 {
                     if(startCard)
                     {
-                        definition = next;
+                        if (next.length() > maxWordLength)
+                        {
+                            String[] sArray = next.split(" ");
+
+                            int sentenceLength = 0;
+                            StringBuilder newQ = new StringBuilder();
+                            for (String word: sArray)
+                            {
+                                if(sentenceLength > maxWordLength)
+                                {
+                                    newQ.append("\n");
+                                    sentenceLength = 0;
+                                }
+                                sentenceLength = sentenceLength + word.length();
+                                newQ.append(" ");
+                                newQ.append(word);
+                            }
+
+                            question = newQ.toString();
+                        } else {
+                            question = next;
+                        }
+
                         startCard = false;
                     } else {
-                        question.append(next).append("\n");
+                        definition.append(next).append("\n");
                     }
                 } else {
-                    addDef(question.toString(), definition);
+                    addDef(definition.toString(), question);
 
                     startCard = true;
-                    question = new StringBuilder();
-                    definition = "";
+                    definition = new StringBuilder();
+                    question = "";
                 }
             }
 
-            addDef(question.toString(), definition);
+            addDef(definition.toString(), question);
 
         } catch (FileNotFoundException e)
         {
