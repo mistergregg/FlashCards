@@ -17,7 +17,7 @@ public class Data {
 
     static private void loadData(String fileName, int screenWidth)
     {
-        int maxWordLength = screenWidth / 50;
+        int maxWordLength = screenWidth / 55;
 
         try {
             File file = new File(fileName);
