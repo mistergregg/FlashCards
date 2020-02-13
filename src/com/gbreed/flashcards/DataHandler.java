@@ -7,6 +7,10 @@ public class DataHandler {
     private static Data data;
     private static List<CardId> totalScore;
     private static int currentCard;
+    private static int currentScore;
+    private int goodCards;
+    private int badCards;
+    private int okCards;
 
     DataHandler(int screenWidth) {
         if (data == null)
@@ -14,9 +18,14 @@ public class DataHandler {
             data = new Data("C://Users/Greg/Desktop/interview questions.txt", screenWidth);
             totalScore = new ArrayList<>();
 
+            goodCards = 0;
+            badCards = 0;
+            okCards = 0;
+
             for (int i = 0; i < data.getSize(); i++)
             {
                 totalScore.add(new CardId(i, 0));
+                badCards++;
             }
         }
     }
@@ -35,7 +44,10 @@ public class DataHandler {
             tmpList.addAll(totalScore.stream().filter(e -> e.getValue() == (min.getValue() + 1)).collect(Collectors.toList()));
         }
 
-        currentCard = tmpList.get((int) (tmpList.size() * Math.random())).getId();
+        CardId tmpCurrCard = tmpList.get((int) (tmpList.size() * Math.random()));
+
+        currentCard = tmpCurrCard.getId();
+        currentScore = tmpCurrCard.getValue();
 
         return data.getCard(currentCard);
     }
@@ -57,6 +69,48 @@ public class DataHandler {
 
     private void modifyScore(int number)
     {
+        switch (currentScore)
+        {
+            case 0:
+                badCards--;
+                break;
+            case 1:
+                okCards--;
+                break;
+            case 2:
+                goodCards--;
+                break;
+        }
+
+        switch (number)
+        {
+            case 0:
+                badCards++;
+                break;
+            case 1:
+                okCards++;
+                break;
+            case 2:
+                goodCards++;
+                break;
+        }
+
         totalScore.set(currentCard, new CardId(currentCard, number));
+    }
+
+    public int getGoodCards() {
+        return goodCards;
+    }
+
+    public int getBadCards() {
+        return badCards;
+    }
+
+    public int getOkCards() {
+        return okCards;
+    }
+
+    public int getCurrentScore() {
+        return currentScore;
     }
 }

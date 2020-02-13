@@ -14,9 +14,14 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+
 public class Main extends Application {
     DataHandler dataHandler;
     Card currentCard;
+    Boolean showingDef = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -33,6 +38,7 @@ public class Main extends Application {
         HBox topBox = new HBox();
         HBox midBox = new HBox();
         HBox bottomBox = new HBox();
+        HBox bottomTextBox = new HBox();
 
         // Setup Top Border
         Label questionField = new Label("Question");
@@ -48,78 +54,101 @@ public class Main extends Application {
 
         // Setup Bottom Border
         Button showDef = new Button("Show Definition");
-        showDef.setPrefSize(100, 20);
+        showDef.setPrefSize(120, 20);
         Button good = new Button("Good!");
         good.setPrefSize(100, 20);
         Button ok = new Button("OK");
         ok.setPrefSize(100, 20);
         Button bad = new Button("Bad");
         bad.setPrefSize(100, 20);
+        Button skip = new Button("Skip");
+        skip.setPrefSize(100, 20);
 
-        bottomBox.setPadding(new Insets(0, 20, 20, 0));
+        // Setup Bottom Text Border
+        Label goodText = new Label("Good: 0");
+        Label badText = new Label("Bad: 0");
+        Label okText = new Label("Ok: 0");
+        goodText.setPrefSize(100, 20);
+        badText.setPrefSize(100, 20);
+        okText.setPrefSize(100, 20);
+
+        bottomBox.setPadding(new Insets(0, 0, 20, 20));
         bottomBox.setSpacing(20);
+
+        skip.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                currentCard = dataHandler.getRandomLowestCard();
+                updateFields(questionField, definitionField, good, bad, ok, okText, badText, goodText);
+            }
+        });
 
         // Handle the button Clicks
         good.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                showingDef = false;
                 currentCard = dataHandler.good();
-                questionField.setText(currentCard.getQuestion());
-                definitionField.setText("");
-                good.setDisable(true);
-                bad.setDisable(true);
-                ok.setDisable(true);
+                updateFields(questionField, definitionField, good, bad, ok, okText, badText, goodText);
             }
         });
 
         bad.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                showingDef = false;
                 currentCard = dataHandler.bad();
-                questionField.setText(currentCard.getQuestion());
-                definitionField.setText("");
-                good.setDisable(true);
-                bad.setDisable(true);
-                ok.setDisable(true);
+                updateFields(questionField, definitionField, good, bad, ok, okText, badText, goodText);
             }
         });
 
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                showingDef = false;
                 currentCard = dataHandler.ok();
-                questionField.setText(currentCard.getQuestion());
-                definitionField.setText("");
-                good.setDisable(true);
-                bad.setDisable(true);
-                ok.setDisable(true);
+                updateFields(questionField, definitionField, good, bad, ok, okText, badText, goodText);
             }
         });
 
         showDef.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                definitionField.setText(currentCard.getDefinition());
-                good.setDisable(false);
-                bad.setDisable(false);
-                ok.setDisable(false);
+                if (showingDef)
+                {
+                    definitionField.setText("");
+                    showingDef = false;
+                    good.setDisable(true);
+                    bad.setDisable(true);
+                    ok.setDisable(true);
+                } else {
+                    definitionField.setText(currentCard.getDefinition());
+                    showingDef = true;
+                    good.setDisable(false);
+                    bad.setDisable(false);
+                    ok.setDisable(false);
+                }
             }
         });
 
         // Add children to border sections
         midBox.getChildren().add(definitionField);
         topBox.getChildren().add(questionField);
-        bottomBox.getChildren().addAll(showDef, good, bad, ok);
+        bottomBox.getChildren().addAll(skip, showDef, good, bad, ok);
+        bottomTextBox.getChildren().addAll(goodText, badText, okText);
 
         // Center the labels
         topBox.setAlignment(Pos.CENTER);
         midBox.setAlignment(Pos.CENTER);
-        bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
+
+        HBox someBot = new HBox();
+        someBot.getChildren().addAll(bottomBox, bottomTextBox);
+        someBot.setSpacing(((width / 2) - 840) * 2);
 
         // Add border sections to border pane
         borderPane.setTop(topBox);
         borderPane.setCenter(midBox);
-        borderPane.setBottom(bottomBox);
+        borderPane.setBottom(someBot);
 
         primaryStage.setTitle("Cards");
         primaryStage.setScene(new Scene(borderPane, width / 2, height / 2));
@@ -127,11 +156,31 @@ public class Main extends Application {
         primaryStage.show();
 
         currentCard = dataHandler.getRandomLowestCard();
+        updateFields(questionField, definitionField, good, bad, ok, okText, badText, goodText);
+    }
+
+    private void updateFields(Label questionField, TextArea definitionField, Button good, Button bad, Button ok, Label okText, Label badText, Label goodText) {
         questionField.setText(currentCard.getQuestion());
         definitionField.setText("");
         good.setDisable(true);
         bad.setDisable(true);
         ok.setDisable(true);
+
+        okText.setText("Ok: " + dataHandler.getOkCards());
+        badText.setText("Bad: " + dataHandler.getBadCards());
+        goodText.setText("Good: " + dataHandler.getGoodCards());
+
+        switch(dataHandler.getCurrentScore()) {
+            case 0:
+                definitionField.setStyle("-fx-border-color: red;");
+                break;
+            case 1:
+                definitionField.setStyle("-fx-border-color: yellow;");
+                break;
+            case 2:
+                definitionField.setStyle("-fx-border-color: green;");
+                break;
+        }
     }
 
 
