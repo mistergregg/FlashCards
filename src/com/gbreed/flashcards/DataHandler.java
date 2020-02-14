@@ -15,7 +15,7 @@ public class DataHandler {
     DataHandler(int screenWidth) {
         if (data == null)
         {
-            data = new Data("C://Users/Greg/Desktop/interview questions.txt", screenWidth);
+            data = new Data(System.getProperty("user.home") + "/Desktop/interview questions.txt", screenWidth);
             totalScore = new ArrayList<>();
 
             goodCards = 0;
